@@ -56,19 +56,17 @@ end
 total = db.execute('select sum(size) from objects').first['sum(size)']
 biggest = db.execute('select * from objects order by size desc limit 1').first
 batch_size_max = biggest['size']
-num_batches = 2*total/batch_size_max
+num_batches = total/batch_size_max + 5
 
 current_batch = 0
 db.execute('select * from objects where batch is null order by size desc').each do |row|
   db.execute("update objects set batch=#{current_batch} where id=#{row['id']}")
-  print '.' # illustrate progress
   if current_batch == num_batches
     current_batch = 1
   else
     current_batch = current_batch + 1
   end
 end
-printf "\n" # illustrate progress
 
 # require 'pry'; binding.pry ; exit 123
 
